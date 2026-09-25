@@ -150,6 +150,14 @@
         align-items: flex-start;
         padding-right: 0;
       }
+
+      /* bigger picture, flush with the left edge of the screen
+         (2px tucked past the edge so the scissors-cut outline doesn't show a sliver there) */
+      .portrait {
+        width: 132px;
+        height: 132px;
+        margin-left: calc(-1 * var(--edge) - 2px);
+      }
     }
   </style>
 </head>
