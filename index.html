@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>doctrine</title>
+  <meta name="theme-color" content="#ff1717">
+  <link rel="icon" href="favicon.png" type="image/png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+  <!-- link previews (messengers, social): a plain field of the background color -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="doctrine">
+  <meta property="og:url" content="https://twotruthsdoctrine.github.io/">
+  <meta property="og:image" content="https://twotruthsdoctrine.github.io/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@1&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #ff1717;
+      --ink: #ffffff;
+      --size: 20px;
+      --pitch: 31px; /* baseline to baseline */
+      /* lines are trimmed to cap height → baseline, so gaps are measured like figma's vertical trim */
+      --cap: calc(var(--size) * 0.6987);
+      --line-gap: calc(var(--pitch) - var(--cap));
+      --blank-line: calc(var(--pitch) * 2 - var(--cap));
+      --footer-gap: calc(var(--pitch) * 3 - var(--cap));
+      --edge: 30px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body { margin: 0; }
+
+    body {
+      min-height: 100vh;
+      min-height: 100svh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: var(--edge);
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "IM Fell English", Georgia, "Times New Roman", serif;
+      font-size: var(--size);
+      font-style: italic;
+      font-weight: 400;
+      line-height: 1;
+      text-transform: lowercase;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    ul, li, a, p { font: inherit; }
+
+    p { margin: 0; }
+
+    .page {
+      flex: 1;
+      width: max-content;
+      max-width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: var(--footer-gap);
+    }
+
+    .list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--line-gap);
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      white-space: nowrap;
+    }
+
+    .indent { margin-left: 3.5em; }
+
+    .cite { margin-top: var(--blank-line); }
+
+    footer { margin-top: 30px; }
+
+    /* trim each text line to cap height → baseline (im fell english italic metrics) */
+    .t::before,
+    .t::after {
+      content: "";
+      display: table;
+    }
+    .t::before { margin-bottom: -0.0723em; }
+    .t::after  { margin-top: -0.2290em; }
+
+    .portrait {
+      display: block;
+      width: 112px;
+      height: 112px;
+      margin-bottom: 30px;
+      object-fit: cover;
+      /* figma-style "texture": a slightly curved, scissors-cut outline */
+      --cut: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1' preserveAspectRatio='none'%3E%3Cpath d='M0.006 0.009Q0.30 0.000 0.52 0.006Q0.78 0.013 0.994 0.003Q1.000 0.33 0.989 0.57Q0.997 0.80 0.991 0.995Q0.70 1.000 0.46 0.989Q0.22 0.983 0.004 0.996Q0.013 0.70 0.006 0.45Q0.000 0.20 0.006 0.009Z'/%3E%3C/svg%3E");
+      -webkit-mask: var(--cut) center / 100% 100% no-repeat;
+      mask: var(--cut) center / 100% 100% no-repeat;
+    }
+
+    /* text that turns to dust on hover (tap on touch), until the page reloads */
+    .dissolve {
+      cursor: default;
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    li.dissolve,
+    p.dissolve {
+      align-self: flex-start;
+      width: fit-content;
+    }
+
+    .dissolve.gone { color: transparent; }
+
+    /* dissolved links stay where they were and keep working */
+    a.dissolve { cursor: pointer; }
+
+    .dust {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+
+    a:hover,
+    a:focus-visible {
+      opacity: 0.6;
+    }
+
+    @media (max-width: 600px) {
+      /* top, bottom and left edges only, so the long line keeps to one line */
+      body {
+        align-items: flex-start;
+        padding-right: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div>
+      <ul class="list">
+        <li class="t dissolve">Where is now?</li>
+        <li class="t dissolve">Now here, and now there, and now here,</li>
+        <li class="t dissolve indent">and now here and there.</li>
+        <li class="t dissolve">This is that.</li>
+        <li class="t dissolve">Here is there.</li>
+        <li class="t"><span class="dissolve">This that here there is.</span> I. We. God.</li>
+      </ul>
+      <p class="t dissolve cite">daniil kharms, 1930</p>
+    </div>
+
+    <div>
+      <img class="portrait" src="portrait-5.jpg" alt="portrait" width="112" height="112">
+      <ul class="list">
+        <li class="t"><a class="dissolve" href="https://t.me/doctrinecast">blog</a></li>
+        <li class="t"><a class="dissolve" href="https://www.are.na/two-truths-doctrine">arena</a></li>
+        <li class="t"><a class="dissolve" href="mailto:twotruthsdoctrine@gmail.com">mail</a></li>
+      </ul>
+      <footer>
+        <p class="t">doctrine.</p>
+      </footer>
+    </div>
+  </main>
+
+  <script>
+    (() => {
+      const els = [...document.querySelectorAll(".dissolve")];
+      if (!els.length) return;
+
+      const DURATION = 1600; // ms for a whole line to blow away
+      const SPREAD = 0.45;   // share of the duration spent starting particles left → right
+      const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      const canvas = document.createElement("canvas");
+      canvas.className = "dust";
+      canvas.setAttribute("aria-hidden", "true");
+      document.body.appendChild(canvas);
+      const ctx = canvas.getContext("2d");
+      let dpr = 1;
+
+      const active = []; // { particles, start }
+      let running = false;
+
+      function resize() {
+        dpr = window.devicePixelRatio || 1;
+        canvas.width = Math.round(innerWidth * dpr);
+        canvas.height = Math.round(innerHeight * dpr);
+      }
+      resize();
+      addEventListener("resize", resize);
+
+      // draw the element's text off-screen and turn every inked device pixel into a particle
+      function sample(el) {
+        const cs = getComputedStyle(el);
+        const size = parseFloat(cs.fontSize);
+        const font = `${cs.fontStyle} ${cs.fontWeight} ${size}px ${cs.fontFamily}`;
+        const text = el.textContent.trim().toLowerCase();
+        const rect = el.getBoundingClientRect();
+        const baseline = el.closest(".t").getBoundingClientRect().bottom; // trimmed line box: its bottom is the baseline
+
+        const off = document.createElement("canvas");
+        const octx = off.getContext("2d", { willReadFrequently: true });
+        octx.font = font;
+        const pad = Math.ceil(size * 0.5);
+        const w = Math.ceil(octx.measureText(text).width) + pad * 2;
+        const h = Math.ceil(size * 1.6) + pad;
+        const base = pad + size;
+        off.width = Math.ceil(w * dpr);
+        off.height = Math.ceil(h * dpr);
+        octx.scale(dpr, dpr);
+        octx.font = font;
+        octx.fillText(text, pad, base);
+
+        const data = octx.getImageData(0, 0, off.width, off.height).data;
+        const originX = rect.left + scrollX - pad;
+        const originY = baseline + scrollY - base;
+        const particles = [];
+
+        for (let py = 0; py < off.height; py++) {
+          for (let px = 0; px < off.width; px++) {
+            const a = data[(py * off.width + px) * 4 + 3];
+            if (a < 8) continue;
+            particles.push({
+              x: originX + px / dpr,
+              y: originY + py / dpr,
+              a: a / 255,
+              delay: (px / off.width) * SPREAD * 0.8 + Math.random() * SPREAD * 0.2,
+              dx: 25 + Math.random() * 70,
+              dy: -8 - Math.random() * 45,
+              wobble: (Math.random() - 0.5) * 12,
+              phase: Math.random() * Math.PI * 2,
+            });
+          }
+        }
+        return particles;
+      }
+
+      function frame(now) {
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = getComputedStyle(document.body).color;
+
+        const sx = scrollX, sy = scrollY;
+        for (let i = active.length - 1; i >= 0; i--) {
+          const t = (now - active[i].start) / DURATION;
+          if (t >= 1) { active.splice(i, 1); continue; }
+
+          for (const p of active[i].particles) {
+            const u = Math.min(1, Math.max(0, (t - p.delay) / (1 - SPREAD)));
+            if (u >= 1) continue;
+            const e = u * u;
+            const x = p.x + p.dx * e + Math.sin(u * 5 + p.phase) * p.wobble * u;
+            const y = p.y + p.dy * e;
+            const sz = 1 + u * 0.8;
+            ctx.globalAlpha = p.a * (1 - u) * (1 - u);
+            ctx.fillRect((x - sx) * dpr, (y - sy) * dpr, sz, sz);
+          }
+        }
+        ctx.globalAlpha = 1;
+
+        if (active.length) requestAnimationFrame(frame);
+        else running = false;
+      }
+
+      function dissolve(el) {
+        if (el.classList.contains("gone")) return;
+        if (reduceMotion) {
+          el.style.transition = "color 0.6s";
+          el.classList.add("gone");
+          return;
+        }
+        active.push({ particles: sample(el), start: performance.now() });
+        el.classList.add("gone");
+        if (!running) {
+          running = true;
+          requestAnimationFrame(frame);
+        }
+      }
+
+      const LINK_DELAY = 600; // ms of dust a tap shows before the link opens
+      let lastPointer = "mouse";
+      addEventListener("pointerdown", (e) => { lastPointer = e.pointerType; }, true);
+
+      for (const el of els) {
+        el.addEventListener("pointerenter", (e) => { if (e.pointerType === "mouse") dissolve(el); });
+
+        if (el.tagName === "A") {
+          // touch: the tap dissolves the link, then opens it. mouse and keyboard open it right away.
+          el.addEventListener("click", (e) => {
+            if (e.detail === 0 || lastPointer === "mouse" || el.classList.contains("gone")) return;
+            e.preventDefault();
+            dissolve(el);
+            setTimeout(() => { location.href = el.href; }, LINK_DELAY);
+          });
+        } else {
+          el.addEventListener("pointerup", (e) => { if (e.pointerType !== "mouse") dissolve(el); });
+        }
+      }
+    })();
+  </script>
+</body>
+</html>
