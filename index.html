@@ -83,7 +83,7 @@
 
     .indent { margin-left: 3.5em; }
 
-    footer { margin-top: 30px; }
+    footer { margin-top: var(--blank-line); }
 
     /* trim each text line to cap height → baseline (im fell english italic metrics) */
     .t::before,
@@ -98,7 +98,7 @@
       display: block;
       width: 112px;
       height: 112px;
-      margin-bottom: 30px;
+      margin-bottom: var(--blank-line);
       object-fit: cover;
       /* figma-style "texture": a slightly curved, scissors-cut outline */
       --cut: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1' preserveAspectRatio='none'%3E%3Cpath d='M0.006 0.009Q0.30 0.000 0.52 0.006Q0.78 0.013 0.994 0.003Q1.000 0.33 0.989 0.57Q0.997 0.80 0.991 0.995Q0.70 1.000 0.46 0.989Q0.22 0.983 0.004 0.996Q0.013 0.70 0.006 0.45Q0.000 0.20 0.006 0.009Z'/%3E%3C/svg%3E");
@@ -150,10 +150,6 @@
         align-items: flex-start;
         padding-right: 0;
       }
-
-      /* same breathing room as between the poem and its caption */
-      .portrait { margin-bottom: var(--blank-line); }
-      footer { margin-top: var(--blank-line); }
     }
   </style>
 </head>
