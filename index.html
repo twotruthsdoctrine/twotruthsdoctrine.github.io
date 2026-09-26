@@ -83,7 +83,11 @@
 
     .indent { margin-left: 3.5em; }
 
-    footer { margin-top: var(--blank-line); }
+    /* the column is centred in the viewport, so centring here centres in both */
+    footer {
+      margin-top: var(--blank-line);
+      text-align: center;
+    }
 
     /* trim each text line to cap height → baseline (im fell english italic metrics) */
     .t::before,
@@ -153,6 +157,12 @@
 
       /* bigger picture, flush with the left edge of the screen
          (2px tucked past the edge so the scissors-cut outline doesn't show a sliver there) */
+      /* mobile column hugs the left edge, so stretch the footer across the screen to centre it there */
+      footer {
+        width: 100vw;
+        margin-left: calc(-1 * var(--edge));
+      }
+
       .portrait {
         width: 132px;
         height: 132px;
