@@ -39,6 +39,12 @@
 
     html, body { margin: 0; }
 
+    /* stop phone browsers (and in-app ones) from resizing text on their own */
+    html {
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+    }
+
     body {
       min-height: 100vh;
       min-height: 100svh;
@@ -129,11 +135,9 @@
     /* dissolved links stay where they were and keep working */
     a.dissolve { cursor: pointer; }
 
+    /* one small canvas per dissolving line, pinned to the page right where the words were */
     .dust {
-      position: fixed;
-      inset: 0;
-      width: 100%;
-      height: 100%;
+      position: absolute;
       pointer-events: none;
     }
 
@@ -143,10 +147,12 @@
       transition: opacity 0.2s;
     }
 
-    a:hover,
-    a:focus-visible {
-      opacity: 0.6;
+    /* hover fade only where there is a real pointer; on phones a tap would leave it stuck half-faded */
+    @media (hover: hover) {
+      a:hover { opacity: 0.6; }
     }
+
+    a:focus-visible { opacity: 0.6; }
 
     @media (max-width: 600px) {
       /* top, bottom and left edges only, so the long line keeps to one line */
@@ -192,7 +198,7 @@
         <li class="t"><a class="dissolve" href="mailto:twotruthsdoctrine@gmail.com">mail</a></li>
       </ul>
       <footer>
-        <p class="t">doctrine.</p>
+        <p class="t">catherine,</p>
       </footer>
     </div>
   </main>
@@ -204,34 +210,31 @@
 
       const DURATION = 1600; // ms for a whole line to blow away
       const SPREAD = 0.45;   // share of the duration spent starting particles left → right
+      const DRIFT_X = 110, DRIFT_Y = 70; // room the dust needs to fly right and up
       const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-      const canvas = document.createElement("canvas");
-      canvas.className = "dust";
-      canvas.setAttribute("aria-hidden", "true");
-      document.body.appendChild(canvas);
-      const ctx = canvas.getContext("2d");
-      let dpr = 1;
-
-      const active = []; // { particles, start }
+      const active = []; // { particles, start, canvas, ctx, left, top, dpr, dot }
       let running = false;
 
-      function resize() {
-        dpr = window.devicePixelRatio || 1;
-        canvas.width = Math.round(innerWidth * dpr);
-        canvas.height = Math.round(innerHeight * dpr);
+      // exact spot where the browser put the text: a zero-size box sits on the baseline at the first letter
+      function measure(el) {
+        const probe = document.createElement("span");
+        probe.style.cssText = "display:inline-block;width:0;height:0;margin:0;padding:0;border:0;vertical-align:baseline";
+        el.insertBefore(probe, el.firstChild);
+        const r = probe.getBoundingClientRect();
+        probe.remove();
+        return { x: r.left + scrollX, baseline: r.top + scrollY };
       }
-      resize();
-      addEventListener("resize", resize);
 
-      // draw the element's text off-screen and turn every inked device pixel into a particle
-      function sample(el) {
+      // draw the words off-screen with the same font and turn every inked pixel into a particle
+      function prepare(el) {
         const cs = getComputedStyle(el);
         const size = parseFloat(cs.fontSize);
         const font = `${cs.fontStyle} ${cs.fontWeight} ${size}px ${cs.fontFamily}`;
         const text = el.textContent.trim().toLowerCase();
-        const rect = el.getBoundingClientRect();
-        const baseline = el.closest(".t").getBoundingClientRect().bottom; // trimmed line box: its bottom is the baseline
+        const { x, baseline } = measure(el);
+        const dpr = window.devicePixelRatio || 1;
+        const res = Math.min(dpr, 2); // sampling density; plenty for dust, light on phones
 
         const off = document.createElement("canvas");
         const octx = off.getContext("2d", { willReadFrequently: true });
@@ -240,24 +243,22 @@
         const w = Math.ceil(octx.measureText(text).width) + pad * 2;
         const h = Math.ceil(size * 1.6) + pad;
         const base = pad + size;
-        off.width = Math.ceil(w * dpr);
-        off.height = Math.ceil(h * dpr);
-        octx.scale(dpr, dpr);
+        off.width = Math.ceil(w * res);
+        off.height = Math.ceil(h * res);
+        octx.scale(res, res);
         octx.font = font;
         octx.fillText(text, pad, base);
 
         const data = octx.getImageData(0, 0, off.width, off.height).data;
-        const originX = rect.left + scrollX - pad;
-        const originY = baseline + scrollY - base;
+        const originX = x - pad, originY = baseline - base;
         const particles = [];
-
         for (let py = 0; py < off.height; py++) {
           for (let px = 0; px < off.width; px++) {
             const a = data[(py * off.width + px) * 4 + 3];
             if (a < 8) continue;
             particles.push({
-              x: originX + px / dpr,
-              y: originY + py / dpr,
+              x: originX + px / res,
+              y: originY + py / res,
               a: a / 255,
               delay: (px / off.width) * SPREAD * 0.8 + Math.random() * SPREAD * 0.2,
               dx: 25 + Math.random() * 70,
@@ -267,32 +268,55 @@
             });
           }
         }
-        return particles;
+
+        // the dust's own canvas: the text box plus room to drift, kept inside the page width
+        const left = originX;
+        const top = originY - DRIFT_Y;
+        const docWidth = document.documentElement.clientWidth + scrollX;
+        const cw = Math.max(1, Math.min(w + DRIFT_X, docWidth - left));
+        const ch = h + DRIFT_Y;
+        const canvas = document.createElement("canvas");
+        canvas.className = "dust";
+        canvas.setAttribute("aria-hidden", "true");
+        canvas.width = Math.ceil(cw * dpr);
+        canvas.height = Math.ceil(ch * dpr);
+        canvas.style.left = `${left}px`;
+        canvas.style.top = `${top}px`;
+        canvas.style.width = `${cw}px`;
+        canvas.style.height = `${ch}px`;
+        document.body.appendChild(canvas);
+
+        return { particles, canvas, ctx: canvas.getContext("2d"), left, top, dpr, dot: dpr / res };
+      }
+
+      function draw(item, now) {
+        const { ctx, canvas, particles, left, top, dpr, dot } = item;
+        const t = (now - item.start) / DURATION;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (t >= 1) return false;
+
+        ctx.fillStyle = getComputedStyle(document.body).color;
+        for (const p of particles) {
+          const u = Math.min(1, Math.max(0, (t - p.delay) / (1 - SPREAD)));
+          if (u >= 1) continue;
+          const e = u * u;
+          const x = p.x + p.dx * e + Math.sin(u * 5 + p.phase) * p.wobble * u;
+          const y = p.y + p.dy * e;
+          const sz = dot * (1 + u * 0.8);
+          ctx.globalAlpha = p.a * (1 - u) * (1 - u);
+          ctx.fillRect((x - left) * dpr, (y - top) * dpr, sz, sz);
+        }
+        ctx.globalAlpha = 1;
+        return true;
       }
 
       function frame(now) {
-        ctx.setTransform(1, 0, 0, 1, 0, 0);
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = getComputedStyle(document.body).color;
-
-        const sx = scrollX, sy = scrollY;
         for (let i = active.length - 1; i >= 0; i--) {
-          const t = (now - active[i].start) / DURATION;
-          if (t >= 1) { active.splice(i, 1); continue; }
-
-          for (const p of active[i].particles) {
-            const u = Math.min(1, Math.max(0, (t - p.delay) / (1 - SPREAD)));
-            if (u >= 1) continue;
-            const e = u * u;
-            const x = p.x + p.dx * e + Math.sin(u * 5 + p.phase) * p.wobble * u;
-            const y = p.y + p.dy * e;
-            const sz = 1 + u * 0.8;
-            ctx.globalAlpha = p.a * (1 - u) * (1 - u);
-            ctx.fillRect((x - sx) * dpr, (y - sy) * dpr, sz, sz);
+          if (!draw(active[i], now)) {
+            active[i].canvas.remove();
+            active.splice(i, 1);
           }
         }
-        ctx.globalAlpha = 1;
-
         if (active.length) requestAnimationFrame(frame);
         else running = false;
       }
@@ -304,8 +328,11 @@
           el.classList.add("gone");
           return;
         }
-        active.push({ particles: sample(el), start: performance.now() });
+        const item = prepare(el);
+        item.start = performance.now();
+        draw(item, item.start);      // dust is on screen before the words are hidden: no blink, no jump
         el.classList.add("gone");
+        active.push(item);
         if (!running) {
           running = true;
           requestAnimationFrame(frame);
