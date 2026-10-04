@@ -109,11 +109,7 @@
       width: 112px;
       height: 112px;
       margin-bottom: var(--blank-line);
-      object-fit: cover;
-      /* figma-style "texture": a slightly curved, scissors-cut outline */
-      --cut: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1' preserveAspectRatio='none'%3E%3Cpath d='M0.006 0.009Q0.30 0.000 0.52 0.006Q0.78 0.013 0.994 0.003Q1.000 0.33 0.989 0.57Q0.997 0.80 0.991 0.995Q0.70 1.000 0.46 0.989Q0.22 0.983 0.004 0.996Q0.013 0.70 0.006 0.45Q0.000 0.20 0.006 0.009Z'/%3E%3C/svg%3E");
-      -webkit-mask: var(--cut) center / 100% 100% no-repeat;
-      mask: var(--cut) center / 100% 100% no-repeat;
+      object-fit: contain;
     }
 
     /* text that turns to dust on hover (tap on touch), until the page reloads */
@@ -161,18 +157,17 @@
         padding-right: 0;
       }
 
-      /* bigger picture, flush with the left edge of the screen
-         (2px tucked past the edge so the scissors-cut outline doesn't show a sliver there) */
       /* mobile column hugs the left edge, so stretch the footer across the screen to centre it there */
       footer {
         width: 100vw;
         margin-left: calc(-1 * var(--edge));
       }
 
+      /* bigger picture, flush with the left edge of the screen */
       .portrait {
-        width: 132px;
-        height: 132px;
-        margin-left: calc(-1 * var(--edge) - 2px);
+        width: 130px;
+        height: 130px;
+        margin-left: calc(-1 * var(--edge));
       }
     }
   </style>
@@ -191,7 +186,7 @@
     </div>
 
     <div>
-      <!-- picture, off for now: <img class="portrait" src="portrait-5.jpg" alt="portrait" width="112" height="112"> -->
+      <img class="portrait" src="drawing.png" alt="portrait" width="112" height="112">
       <ul class="list">
         <li class="t"><a class="dissolve" href="https://t.me/doctrinecast">blog</a></li>
         <li class="t"><a class="dissolve" href="https://www.are.na/two-truths-doctrine">arena</a></li>
