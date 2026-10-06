@@ -17,18 +17,23 @@
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@1&display=swap" rel="stylesheet">
+  <link rel="preload" href="hand.woff2" as="font" type="font/woff2" crossorigin>
 
   <style>
+    /* pecita by philippe cochy (sil open font license 1.1), subset for the web under its own name */
+    @font-face {
+      font-family: "Doctrine Hand";
+      src: url("hand.woff2") format("woff2");
+      font-display: swap;
+    }
+
     :root {
       --bg: #ff1717;
       --ink: #ffffff;
-      --size: 20px;
+      --size: 18px; /* pecita runs wider: 18px keeps the long line at its original 326px */
       --pitch: 31px; /* baseline to baseline */
       /* lines are trimmed to cap height → baseline, so gaps are measured like figma's vertical trim */
-      --cap: calc(var(--size) * 0.6987);
+      --cap: calc(var(--size) * 0.541);
       --line-gap: calc(var(--pitch) - var(--cap));
       --blank-line: calc(var(--pitch) * 2 - var(--cap));
       --footer-gap: calc(var(--pitch) * 3 - var(--cap));
@@ -54,9 +59,9 @@
       padding: var(--edge);
       background: var(--bg);
       color: var(--ink);
-      font-family: "IM Fell English", Georgia, "Times New Roman", serif;
+      font-family: "Doctrine Hand", Georgia, "Times New Roman", serif;
       font-size: var(--size);
-      font-style: italic;
+      font-style: normal;
       font-weight: 400;
       line-height: 1;
       text-transform: lowercase;
@@ -87,7 +92,7 @@
       white-space: nowrap;
     }
 
-    .indent { margin-left: 3.5em; }
+    .indent { margin-left: 70px; }
 
     /* the column is centred in the viewport, so centring here centres in both */
     footer {
@@ -95,14 +100,14 @@
       text-align: center;
     }
 
-    /* trim each text line to cap height → baseline (im fell english italic metrics) */
+    /* trim each text line to cap height → baseline (pecita metrics) */
     .t::before,
     .t::after {
       content: "";
       display: table;
     }
-    .t::before { margin-bottom: -0.0723em; }
-    .t::after  { margin-top: -0.2290em; }
+    .t::before { margin-bottom: -0.119em; }
+    .t::after  { margin-top: -0.34em; }
 
     .portrait {
       display: block;
